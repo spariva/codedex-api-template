@@ -11,6 +11,7 @@ function App() {
   const [accessToken, setAccessToken] = useState("");
   //const [artistID, setArtistID] = useState(""); No entiendo por qué este no lo necesito.
   const [albums, setAlbums] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
 
   useEffect(() => {
     let authParams = {
@@ -60,7 +61,31 @@ function App() {
     )
       .then((result) => result.json())
       .then((data) => {
+        console.log(data);
+        console.log(data.items);
         setAlbums(data.items);
+      });
+  }
+
+  // Search for playlists with similar names to the search input
+  async function searchPlaylists() {
+    let playlistParams = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    };
+
+    await fetch(
+      "https://api.spotify.com/v1/search?q=" + searchInput + "&type=playlist",
+      playlistParams
+    )
+      .then((result) => result.json())
+      .then((data) => {
+        console.log(data);
+        console.log(data.items);
+        setPlaylists(data.items);
       });
   }
 
@@ -74,7 +99,7 @@ function App() {
             aria-label="Search for an Artist"
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                search();
+                searchPlaylists();
               }
             }}
             onChange={(event) => setSearchInput(event.target.value)}
@@ -90,6 +115,74 @@ function App() {
           />
           <Button onClick={search}>Search</Button>
         </InputGroup>
+      </Container>
+
+      <Container>
+        <Row
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "space-around",
+            alignContent: "center",
+          }}
+        >
+          {playlists.map((playlist) => {
+            return (
+              <Card
+                key={playlist.id}
+                style={{
+                  backgroundColor: "grey",
+                  margin: "10px",
+                  borderRadius: "5px",
+                  marginBottom: "30px",
+                }}
+              >
+                <Card.Img
+                  width={200}
+                  src={playlist.images[0].url}
+                  style={{
+                    borderRadius: "4%",
+                  }}
+                />
+                <Card.Body>
+                  <Card.Title
+                    style={{
+                      whiteSpace: "wrap",
+                      fontWeight: "bold",
+                      maxWidth: "200px",
+                      fontSize: "18px",
+                      marginTop: "10px",
+                      color: "black",
+                    }}
+                  >
+                    {playlist.name}
+                  </Card.Title>
+                  <Card.Text
+                    style={{
+                      color: "black",
+                    }}
+                  >
+                    Created by: <br /> {playlist.owner.display_name}
+                  </Card.Text>
+                  <Button
+                    href={playlist.external_urls.spotify}
+                    style={{
+                      backgroundColor: "black",
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "15px",
+                      borderRadius: "5px",
+                      padding: "10px",
+                    }}
+                  >
+                    Playlist Link
+                  </Button>
+                </Card.Body>
+              </Card>
+            );
+          })}
+        </Row>
       </Container>
 
       <Container>
