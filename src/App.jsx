@@ -1,7 +1,7 @@
 
 import './App.css'
 import { useState, useEffect } from "react";
-import { FormControl, InputGroup, Container, Button, Row, Card } from "react-bootstrap";
+import { FormControl, InputGroup, Container, Button, Row, Card, Image } from "react-bootstrap";
 
 const clientId = import.meta.env.VITE_CLIENT_ID;
 const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
@@ -51,6 +51,9 @@ function App() {
       .then((data) => {
         return data.artists.items[0].id;
       });
+      //catch(error){
+        
+      //}
 
     // Get Artist Albums
     await fetch(
@@ -83,9 +86,10 @@ function App() {
     )
       .then((result) => result.json())
       .then((data) => {
-        console.log(data);
-        console.log(data.items);
+        console.log("data: " +data);
+        console.log("data.items : " +data.items);
         setPlaylists(data.items);
+        console.log("state : " + this.state.playlists);
       });
   }
 
@@ -99,7 +103,7 @@ function App() {
             aria-label="Search for an Artist"
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                searchPlaylists();
+                search();
               }
             }}
             onChange={(event) => setSearchInput(event.target.value)}
@@ -186,6 +190,7 @@ function App() {
       </Container>
 
       <Container>
+        <Image src="holder.js/171x180" roundedCircle />
         <Row
           style={{
             display: "flex",
