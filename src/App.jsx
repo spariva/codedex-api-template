@@ -93,6 +93,34 @@ function App() {
       });
   }
 
+  async function getRecommendations() {
+    let endpoint = `v1/recommendations?limit=15`;
+
+    // Suma de los seed no sea mayor a 5. Mejor lo hago fuera de la función y una vez llegue a 5 y hay click llamo a la función.
+
+    
+    if (seedGenres && seedGenres.length > 0) {
+        endpoint += `&seed_genres=${encodeURIComponent(seedGenres.join(','))}`;
+    }
+    
+    if (Array.isArray(seedTracksIds) && seedTracksIds.length != 0) {
+        endpoint += `&seed_tracks=${encodeURIComponent(seedTracksIds.join(','))}`;
+    }
+
+    if (targetEnergy) {
+        endpoint += `&target_energy=${targetEnergy}`;
+    }
+    
+    const response = await fetchWebApi(endpoint, 'GET');
+    if (response && response.tracks) {
+        console.log(response.tracks);
+        return response.tracks;
+    } else {
+        console.error('Failed to fetch recommendations');
+        return [];
+    }
+  }
+
   return (
     <>
       <Container>
@@ -103,7 +131,7 @@ function App() {
             aria-label="Search for an Artist"
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                search();
+                searchPlaylists();
               }
             }}
             onChange={(event) => setSearchInput(event.target.value)}
@@ -117,7 +145,7 @@ function App() {
               paddingLeft: "10px",
             }}
           />
-          <Button onClick={search}>Search</Button>
+          <Button onClick={search} variant='primary'>Search</Button>
         </InputGroup>
       </Container>
 
