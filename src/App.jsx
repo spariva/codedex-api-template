@@ -1,16 +1,18 @@
-
 import './App.css'
 import { useState, useEffect } from "react";
-import { FormControl, InputGroup, Container, Button, Row, Card, Image } from "react-bootstrap";
+import { FormControl, InputGroup, Container, Button, Row, Card} from "react-bootstrap";
 
+//? Se recupera de las variables de entorno el client_id y el client_secret
 const clientId = import.meta.env.VITE_CLIENT_ID;
 const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
 
 function App() {
+  //? Estados: Se definen tres estados usando useState
   const [searchInput, setSearchInput] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [albums, setAlbums] = useState([]);
 
+  //? useEffect: Autentificar y obtener el token de acceso, cada vez que el componente se monta. (porque como dependencia le paso un array vacío). Seteo el accesToken.
   useEffect(() => {
     let authParams = {
       method: "POST",
@@ -31,6 +33,7 @@ function App() {
       });
   }, []);
 
+  //? Función search: Función asíncrona que busca al primer artista que tenga como resultado, y con su id, sus albumes con otro endpoint.
   async function search() {
     let artistParams = {
       method: "GET",
@@ -50,7 +53,7 @@ function App() {
         return data.artists.items[0].id;
       });
 
-    // Get Artist Albums
+    //? Albums
     await fetch(
       "https://api.spotify.com/v1/artists/" +
       artistID +
@@ -64,30 +67,6 @@ function App() {
         setAlbums(data.items);
       });
   }
-
-  // Search for playlists with similar names to the search input
-  // async function searchPlaylists() {
-  //   let playlistParams = {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: "Bearer " + accessToken,
-  //     },
-  //   };
-
-  //   await fetch(
-  //     "https://api.spotify.com/v1/search?q=" + searchInput + "&type=playlist",
-  //     playlistParams
-  //   )
-  //     .then((result) => result.json())
-  //     .then((data) => {
-  //       console.log("data: " +data);
-  //       console.log("data.items : " +data.items);
-  //       setPlaylists(data.items);
-  //       console.log("state : " + this.state.playlists);
-  //     });
-  // }
-
   return (
     <>
       <Container>
@@ -117,7 +96,6 @@ function App() {
       </Container>
 
       <Container>
-        <Image src="holder.js/171x180" roundedCircle />
         <Row
           style={{
             display: "flex",
@@ -127,6 +105,7 @@ function App() {
             alignContent: "center",
           }}
         >
+          {/* Mapear el state albums */}
           {albums.map((album) => {
             return (
               <Card
@@ -190,7 +169,3 @@ function App() {
 
 export default App;
 
-// A Container to wrap around the search box.
-// An InputGroup used as the form for our search box.
-// A FormControl for our search box input.
-// A Button to search for what was typed.
